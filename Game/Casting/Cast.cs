@@ -1,7 +1,7 @@
 using System.Collections.Generic;
+using simon_says_memory.Game.Casting;
 
-
-namespace Unit05.Game.Casting
+namespace simon_says_memory.Game.Casting
 {
     /// <summary>
     /// <para>A collection of actors.</para>

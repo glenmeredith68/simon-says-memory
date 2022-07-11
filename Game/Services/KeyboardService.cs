@@ -1,9 +1,9 @@
 using System.Collections.Generic;
 using Raylib_cs;
-using Unit05.Game.Casting;
+using simon_says_memory.Game.Casting;
 
 
-namespace Unit05.Game.Services
+namespace simon_says_memory.Game.Services
 {
     /// <summary>
     /// <para>Detects player input.</para>
@@ -21,20 +21,22 @@ namespace Unit05.Game.Services
         /// </summary>
         public KeyboardService()
         {
-            keys["w"] = KeyboardKey.KEY_W;
-            keys["a"] = KeyboardKey.KEY_A;
-            keys["s"] = KeyboardKey.KEY_S;
-            keys["d"] = KeyboardKey.KEY_D;
-            keys["i"] = KeyboardKey.KEY_I;
-            keys["j"] = KeyboardKey.KEY_J;
-            keys["k"] = KeyboardKey.KEY_K;
-            keys["l"] = KeyboardKey.KEY_L;
+            keys["Space"] = KeyboardKey.KEY_SPACE;
+            keys["1"] = KeyboardKey.KEY_KP_1;
+            keys["2"] = KeyboardKey.KEY_KP_2;
+            keys["3"] = KeyboardKey.KEY_KP_3;
+            keys["4"] = KeyboardKey.KEY_KP_4;
+            keys["5"] = KeyboardKey.KEY_KP_5;
+            keys["6"] = KeyboardKey.KEY_KP_6;
+            keys["7"] = KeyboardKey.KEY_KP_7;
+            keys["8"] = KeyboardKey.KEY_KP_8;
+            keys["9"] = KeyboardKey.KEY_KP_9;
         }
 
         /// <summary>
         /// Checks if the given key is currently down.
         /// </summary>
-        /// <param name="key">The given key (w, a, s, d, i, j, k, or l)</param>
+        /// <param name="key">The given key (Space or 1-9)</param>
         /// <returns>True if the given key is down; false if otherwise.</returns>
         public bool IsKeyDown(string key)
         {
@@ -45,7 +47,7 @@ namespace Unit05.Game.Services
         /// <summary>
         /// Checks if the given key is currently up.
         /// </summary>
-        /// <param name="key">The given key (w, a, s, d, i, j, k, or l)</param>
+        /// <param name="key">The given key (Space or 1-9)</param>
         /// <returns>True if the given key is up; false if otherwise.</returns>
         public bool IsKeyUp(string key)
         {
