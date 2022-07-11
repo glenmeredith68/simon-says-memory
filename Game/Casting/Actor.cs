@@ -1,158 +1,271 @@
 using System;
-using simon_says_memory.Game.Casting;
+using System.Numerics;
+
 
 namespace simon_says_memory.Game.Casting
 {
     /// <summary>
-    /// <para>A thing that participates in the game.</para>
-    /// <para>
-    /// The responsibility of Actor is to keep track of its appearance, position and velocity in 2d 
-    /// space.
-    /// </para>
+    /// A participant in the game.
     /// </summary>
     public class Actor
     {
-        private string text = "";
-        private int fontSize = 15;
-        private Color color = Constants.WHITE;
-        private Point position = new Point(0, 0);
-        private Point velocity = new Point(0, 0);
+        private bool _enabled = true;
+        private Vector2 _position = Vector2.Zero;
+        private float _rotation = 0f;
+        private float _scale = 1f;
+        private Vector2 _size = Vector2.Zero;
+        private Color _tint = Color.White();
+        private Vector2 _velocity = Vector2.Zero;
+        
+        public Actor() { }
 
-        /// <summary>
-        /// Constructs a new instance of Actor.
-        /// </summary>
-        public Actor()
+        public virtual bool BounceIn(Actor region)
         {
-        }
+            Validator.CheckNotNull(region);
+            bool bounced = false;
 
-        /// <summary>
-        /// Gets the actor's color.
-        /// </summary>
-        /// <returns>The color.</returns>
-        public Color GetColor()
-        {
-            return color;
-        }
-
-        /// <summary>
-        /// Gets the actor's font size.
-        /// </summary>
-        /// <returns>The font size.</returns>
-        public int GetFontSize()
-        {
-            return fontSize;
-        }
-
-        /// <summary>
-        /// Gets the actor's position.
-        /// </summary>
-        /// <returns>The position.</returns>
-        public Point GetPosition()
-        {
-            return position;
-        }
-
-        /// <summary>
-        /// Gets the actor's text.
-        /// </summary>
-        /// <returns>The text.</returns>
-        public string GetText()
-        {
-            return text;
-        }
-
-        /// <summary>
-        /// Gets the actor's current velocity.
-        /// </summary>
-        /// <returns>The velocity.</returns>
-        public Point GetVelocity()
-        {
-            return velocity;
-        }
-
-        /// <summary>
-        /// Moves the actor to its next position according to its velocity. Will wrap the position 
-        /// from one side of the screen to the other when it reaches the maximum x and y 
-        /// values.
-        /// </summary>
-        public virtual void MoveNext()
-        {
-            int x = ((position.GetX() + velocity.GetX()) + Constants.MAX_X) % Constants.MAX_X;
-            int y = ((position.GetY() + velocity.GetY()) + Constants.MAX_Y) % Constants.MAX_Y;
-            position = new Point(x, y);
-        }
-
-        /// <summary>
-        /// Sets the actor's color to the given value.
-        /// </summary>
-        /// <param name="color">The given color.</param>
-        /// <exception cref="ArgumentException">When color is null.</exception>
-        public void SetColor(Color color)
-        {
-            if (color == null)
+            if (_enabled)
             {
-                throw new ArgumentException("color can't be null");
+                if (GetLeft() <= region.GetLeft() || GetRight() >= region.GetRight())
+                {
+                    Vector2 oldVelocity = GetVelocity();
+                    Vector2 newVelocity = new Vector2(oldVelocity.X * -1, oldVelocity.Y);
+                    Steer(newVelocity);
+                    bounced = true;
+                }
+                else if (GetTop() <= region.GetTop() || GetBottom() >= region.GetBottom())
+                {
+                    Vector2 oldVelocity = GetVelocity();
+                    Vector2 newVelocity = new Vector2(oldVelocity.X, oldVelocity.Y * -1);
+                    Steer(newVelocity);
+                    bounced = true;
+                }
             }
-            this.color = color;
+
+            return bounced;
         }
 
-        /// <summary>
-        /// Sets the actor's font size to the given value.
-        /// </summary>
-        /// <param name="fontSize">The given font size.</param>
-        /// <exception cref="ArgumentException">
-        /// When font size is less than or equal to zero.
-        /// </exception>
-        public void SetFontSize(int fontSize)
+        public virtual void ClampTo(Actor region)
         {
-            if (fontSize <= 0)
+            Validator.CheckNotNull(region);
+            
+            if (_enabled)
             {
-                throw new ArgumentException("fontSize must be greater than zero");
+                float x = GetLeft();
+                float y = GetTop();
+
+                float maxX = region.GetRight() - GetWidth();
+                float maxY = region.GetBottom() - GetHeight();
+                float minX = region.GetLeft();
+                float minY = region.GetTop();
+
+                x = Math.Clamp(x, minX, maxX);
+                y = Math.Clamp(y, minY, maxY);
+
+                Vector2 newPosition = new Vector2(x, y);
+                MoveTo(newPosition);
             }
-            this.fontSize = fontSize;
         }
 
-        /// <summary>
-        /// Sets the actor's position to the given value.
-        /// </summary>
-        /// <param name="position">The given position.</param>
-        /// <exception cref="ArgumentException">When position is null.</exception>
-        public void SetPosition(Point position)
+        public virtual void Enable()
         {
-            if (position == null)
-            {
-                throw new ArgumentException("position can't be null");
-            }
-            this.position = position;
+            _enabled = true;
         }
 
-        /// <summary>
-        /// Sets the actor's text to the given value.
-        /// </summary>
-        /// <param name="text">The given text.</param>
-        /// <exception cref="ArgumentException">When text is null.</exception>
-        public void SetText(string text)
+        public virtual void Disable()
         {
-            if (text == null)
-            {
-                throw new ArgumentException("text can't be null");
-            }
-            this.text = text;
+            _enabled = false;
         }
 
-        /// <summary>
-        /// Sets the actor's velocity to the given value.
-        /// </summary>
-        /// <param name="velocity">The given velocity.</param>
-        /// <exception cref="ArgumentException">When velocity is null.</exception>
-        public void SetVelocity(Point velocity)
+        public virtual float GetBottom()
         {
-            if (velocity == null)
-            {
-                throw new ArgumentException("velocity can't be null");
-            }
-            this.velocity = velocity;
+            return _position.Y + _size.Y;
         }
 
+        public virtual Vector2 GetCenter()
+        {
+            float x = _position.X + (_size.X / 2);
+            float y = _position.Y + (_size.Y / 2);
+            return new Vector2(x, y);
+        }
+
+        public virtual float GetCenterX()
+        {
+            return _position.X + (_size.X / 2);
+        }
+
+        public virtual float GetCenterY()
+        {
+            return _position.Y + (_size.Y / 2);
+        }
+
+        public virtual float GetHeight()
+        {
+            return _size.Y;
+        }
+
+        public virtual float GetLeft()
+        {
+            return _position.X;
+        }
+
+        public virtual Vector2 GetPosition()
+        {
+            return _position;
+        }
+
+        public virtual Vector2 GetOriginalSize()
+        {
+            return _size;
+        }
+
+        public virtual float GetRight()
+        {
+            return _position.X + _size.X;
+        }
+
+        public virtual float GetRotation()
+        {
+            return _rotation;
+        }
+
+        public virtual float GetScale()
+        {
+            return _scale;
+        }
+
+        public virtual Vector2 GetSize()
+        {
+            return _size * _scale;
+        }
+
+        public virtual Color GetTint()
+        {
+            return _tint;
+        }
+
+        public virtual float GetTop()
+        {
+            return _position.Y;
+        }
+
+        public virtual Vector2 GetVelocity()
+        {
+            return _velocity;
+        }
+
+        public virtual float GetWidth()
+        {
+            return _size.X;
+        }
+
+        public virtual void Move()
+        {
+            if (_enabled)
+            {
+                _position = _position + _velocity;
+            }
+        }
+
+        public virtual void Move(float gravity)
+        {
+            if (_enabled)
+            {
+                Vector2 force = new Vector2(_velocity.X, _velocity.Y + gravity);
+                _position = _position + force;
+            }
+        }
+
+        public virtual void MoveTo(Vector2 position)
+        {
+            _position = position;
+        }
+
+        public virtual void MoveTo(float x, float y)
+        {
+            _position = new Vector2(x, y);
+        }
+
+        public virtual bool Overlaps(Actor other)
+        {
+            return (this.GetLeft() < other.GetRight() && this.GetRight() > other.GetLeft()
+                && this.GetTop() < other.GetBottom() && this.GetBottom() > other.GetTop());
+        }
+
+        public virtual bool Overlaps(Vector2 point)
+        {
+            return (this.GetLeft() <= point.X && this.GetRight() >= point.X
+                && this.GetTop() >= point.Y && this.GetBottom() <= point.Y);
+        }
+
+        public virtual void Rotate(float degrees)
+        {
+            _rotation += degrees;
+        }
+
+        public virtual void RotateTo(float degrees)
+        {
+            _rotation = degrees;
+        }
+
+        public virtual void Scale(float percent)
+        {
+            _scale += percent;
+        }
+
+        public virtual void ScaleTo(float percent)
+        {
+            _scale = percent;
+        }
+
+        public virtual void Tint(Color color)
+        {
+            Validator.CheckNotNull(color);
+            _tint = color;
+        }
+
+        public virtual void SizeTo(Vector2 size) 
+        {
+            _size = size;
+        }
+
+        public virtual void SizeTo(float width, float height) 
+        {
+            _size = new Vector2(width, height);
+        }
+
+        public virtual void Steer(Vector2 vector)
+        {
+            _velocity = vector;
+        }
+
+        public virtual void Steer(float vx, float vy)
+        {
+            _velocity = new Vector2(vx, vy);
+        }
+
+        public virtual void WrapIn(Actor region)
+        {
+            Validator.CheckNotNull(region);
+
+            if (_enabled)
+            {
+                float x = this.GetLeft();
+                float y = this.GetTop();
+
+                float maxX = region.GetRight();
+                float maxY = region.GetBottom();
+                float minX = region.GetLeft() - this.GetWidth();
+                float minY = region.GetTop() - this.GetHeight();
+
+                if (x < minX) x = maxX;
+                if (x > maxX) x = minX;
+                if (y < minY) y = maxY;
+                if (y > maxY) y = minY;
+
+                Vector2 newPosition = new Vector2(x, y);
+                MoveTo(newPosition);
+            }
+        }
     }
 }
