@@ -39,8 +39,9 @@ namespace simon_says_memory.Game.Casting;
 
         public static string CAPTION = "Simon Says";
 
-        public List<string> getSprites() {
-            public List<string> spirtes = [sprite1,     ]
+        public List<string> getSprites() 
+        {
+            return public List<string> sprites = [sprite1     ];
         }
 
     }

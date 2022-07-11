@@ -12,13 +12,13 @@ namespace simon_says_memory.Game.Scripting
     /// </summary>
     public class ControlActorsAction : Action
     {
-        private KeyboardService keyboardService;
+        private RaylibKeyboardService keyboardService;
 
 
         /// <summary>
         /// Constructs a new instance of ControlActorsAction using the given KeyboardService.
         /// </summary>
-        public ControlActorsAction(KeyboardService keyboardService)
+        public ControlActorsAction(RaylibKeyboardService keyboardService)
         {
             this.keyboardService = keyboardService;
         }
@@ -27,63 +27,39 @@ namespace simon_says_memory.Game.Scripting
         public void Execute(Cast cast, Script script)
         {
             // Space
-            if (keyboardService.IsKeyDown("Space"))
+            if (keyboardService.IsKeyDown(KeyboardKey.Space))
             {
-                    
+                //start or restart game
             }
 
             // sprite 1
-            if (keyboardService.IsKeyDown("1"))
+            if (keyboardService.IsKeyDown(KeyboardKey.One))
             {
-
+                //select
             }
 
             // sprite 2
-            if (keyboardService.IsKeyDown("2"))
+            if (keyboardService.IsKeyDown(KeyboardKey.Two))
             {
 
             }
 
             // sprite 3
-            if (keyboardService.IsKeyDown("3"))
+            if (keyboardService.IsKeyDown(KeyboardKey.Three))
             {
 
             }
 
             //sprite 4
-             if (keyboardService.IsKeyDown("4"))
+             if (keyboardService.IsKeyDown(KeyboardKey.Four))
             {
 
             }
 
             // sprite 5
-            if (keyboardService.IsKeyDown("5"))
+            if (keyboardService.IsKeyDown(KeyboardKey.Five))
             {
                
-            }
-
-            // sprite 6
-            if (keyboardService.IsKeyDown("6"))
-            {
-                
-            }
-
-            // sprite 7
-            if (keyboardService.IsKeyDown("7"))
-            {
-
-            }
-
-            // sprite 8
-            if (keyboardService.IsKeyDown("8"))
-            {
-
-            }
-
-            // sprite 9
-            if (keyboardService.IsKeyDown("9"))
-            {
-
             }
             
             
