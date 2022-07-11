@@ -3,7 +3,7 @@ using simon_says_memory.Game.Casting;
 using Microsoft.VisualBasic;
 using System.Collections.Generic;
 
-namespace simon_says_memory.Game.Casting;
+namespace simon_says_memory.Game.Casting
 {
     public class Sprites
     {
@@ -39,8 +39,10 @@ namespace simon_says_memory.Game.Casting;
 
         public static string CAPTION = "Simon Says";
 
-        public List<string> getSprites() {
-            public List<string> spirtes = [sprite1,     ]
+        public static List<string> getSprites() {
+            return new List<string>{
+                sprite1, sprite2,sprite3,sprite4,sprite5,sprite6,sprite7,sprite8,sprite9,sprite10
+            };
         }
 
     }
