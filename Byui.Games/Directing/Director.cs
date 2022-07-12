@@ -1,18 +1,13 @@
 using System.Collections.Generic;
-using simon_says_memory.Game.Casting;
-using simon_says_memory.Game.Scripting;
-using simon_says_memory.Game.Services;
+using Byui.Games.Scripting;
+using Byui.Games.Services;
 
-
-namespace simon_says_memory.Game.Directing
+namespace Byui.Games.Directing
 {
     /// <summary>
-    /// <para>A person who directs the game.</para>
-    /// <para>
-    /// The responsibility of a Director is to control the sequence of play.
-    /// </para>
+    /// Controls the sequence and pacing of the game.
     /// </summary>
-    public class Director
+    public class Director : IActionCallback
     {
         private IAudioService _audioService = null;
         private IVideoService _videoService = null;
@@ -25,21 +20,6 @@ namespace simon_says_memory.Game.Directing
             _settingsService = serviceFactory.GetSettingsService();
         }
 
-        /// <summary>
-        /// Starts the game by running the main game loop for the given cast and script.
-        /// </summary>
-        /// <param name="cast">The given cast.</param>
-        /// <param name="script">The given script.</param>
-        public void StartGame(Cast cast, Script script)
-        {
-            while (_videoService.IsWindowOpen())
-            {
-                ExecuteActions("input", cast, script);
-                ExecuteActions("update", cast, script);
-                ExecuteActions("output", cast, script);
-            }
-        }
-        
         public void OnError(string message, System.Exception exception)
         {
             _audioService.Release();
@@ -80,8 +60,8 @@ namespace simon_says_memory.Game.Directing
         private void DoActions(int phase, Scene scene)
         {
             float deltaTime = _videoService.GetDeltaTime();
-            List<simon_says_memory.Game.Scripting.Action> actions = scene.GetAllActions(phase);
-            foreach(simon_says_memory.Game.Scripting.Action action in actions)
+            List<Action> actions = scene.GetAllActions(phase);
+            foreach(Action action in actions)
             {
                 action.Execute(scene, deltaTime, this);
             }

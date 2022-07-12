@@ -1,8 +1,8 @@
 using System.Collections.Generic;
-using simon_says_memory.Game.Casting;
+using Byui.Games.Casting;
 
 
-namespace simon_says_memory.Game.Scripting
+namespace Byui.Games.Scripting
 {
     /// <summary>
     /// A collection of Actions.
@@ -73,12 +73,6 @@ namespace simon_says_memory.Game.Scripting
                 total += actions.Count;
             }
             return total;
-        }
-
-        public simon_says_memory.Game.Scripting.Action GetAction(string group) {
-            List<Action> actions = new List<Action>();
-            foreach(string )
-            return;
         }
 
         public void Remove(int phase, Action action)
