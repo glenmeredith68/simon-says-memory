@@ -1,4 +1,3 @@
-using System.Collections.Generic;
 using simon_says_memory.Game.Casting;
 using simon_says_memory.Game.Scripting;
 using simon_says_memory.Game.Services;
@@ -12,17 +11,17 @@ namespace simon_says_memory.Game.Directing
     /// The responsibility of a Director is to control the sequence of play.
     /// </para>
     /// </summary>
-    public class Director
+    public class Director : IActionCallback
     {
-        private VideoService videoService = null;
+        private IAudioService _audioService = null;
+        private IVideoService _videoService = null;
+        private ISettingsService _settingsService = null;
 
-        /// <summary>
-        /// Constructs a new instance of Director using the given KeyboardService and VideoService.
-        /// </summary>
-        /// <param name="videoService">The given VideoService.</param>
-        public Director(VideoService videoService)
+        public Director(IServiceFactory serviceFactory)
         {
-            this.videoService = videoService;
+            _audioService = serviceFactory.GetAudioService();
+            _videoService = serviceFactory.GetVideoService();
+            _settingsService = serviceFactory.GetSettingsService();
         }
 
         /// <summary>
@@ -32,15 +31,62 @@ namespace simon_says_memory.Game.Directing
         /// <param name="script">The given script.</param>
         public void StartGame(Cast cast, Script script)
         {
-            videoService.OpenWindow();
-            while (videoService.IsWindowOpen())
+            while (_videoService.IsWindowOpen())
             {
                 ExecuteActions("input", cast, script);
                 ExecuteActions("update", cast, script);
                 ExecuteActions("output", cast, script);
             }
-            videoService.CloseWindow();
         }
+        
+        public void OnError(string message, System.Exception exception)
+        {
+            _audioService.Release();
+            _videoService.Release();
+            _settingsService.Save();
+            System.Console.Error.WriteLine($"ERROR: {message}");
+            System.Console.Error.WriteLine(exception.Message);
+            System.Console.Error.WriteLine(exception.StackTrace);
+        }
+
+        public void OnInfo(string message)
+        {
+            System.Console.Out.WriteLine($"INFO: {message}");
+        }
+
+        public void OnStop()
+        {
+            _audioService.Release();
+            _videoService.Release();
+        }
+
+        public void Direct(Scene scene)
+        {
+            _audioService.Initialize();
+            _videoService.Initialize();
+            while (_videoService.IsWindowOpen())
+            {
+                DoActions(Phase.Input, scene);
+                DoActions(Phase.Update, scene);
+                DoActions(Phase.Output, scene);
+                scene.ApplyChanges();
+            }
+            _audioService.Release();
+            _videoService.Release();
+            _settingsService.Save();
+        }
+
+        private void DoActions(int phase, Scene scene)
+        {
+            float deltaTime = _videoService.GetDeltaTime();
+            List<Action> actions = scene.GetAllActions(phase);
+            foreach(Action action in actions)
+            {
+                action.Execute(scene, deltaTime, this);
+            }
+        }
+
+        
 
         /// <summary>
         /// Calls execute for each action in the given group.

@@ -43,6 +43,7 @@ namespace simon_says_memory.Game.Casting
             return new List<string>{
                 sprite1, sprite2,sprite3,sprite4,sprite5,sprite6,sprite7,sprite8,sprite9,sprite10
             };
+       
         }
 
     }
