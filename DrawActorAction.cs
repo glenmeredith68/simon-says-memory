@@ -4,7 +4,7 @@ using Byui.Games.Scripting;
 using Byui.Games.Services;
 
 
-namespace Example.Scaling
+namespace simon_says_memory
 {
     /// <summary>
     /// Draws the actors on the screen.

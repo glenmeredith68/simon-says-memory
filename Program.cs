@@ -1,25 +1,68 @@
-﻿using System;
-using simon_says_memory.Game.Directing;
-using simon_says_memory.Game.Services;
-using simon_says_memory.Game.Casting;
-using simon_says_memory.Game.Scripting;
+﻿using Byui.Games.Casting;
+using Byui.Games.Directing;
+using Byui.Games.Scripting;
+using Byui.Games.Services;
+
 
 namespace simon_says_memory
 {
+    /// <summary>
+    /// The entry point for the program.
+    /// </summary>
+    /// <remarks>
+    /// The purpose of this program is to demonstrate how Actors, Actions, Services and a Director 
+    /// work together to scale an actor up and down on the screen.
+    /// </remarks>
     internal class Program
     {
-        static void Main(string[] args)
+        public static void Main(string[] args)
         {
-            // create the services
-            RaylibServiceFactory serviceFactory = new RaylibServiceFactory();
+            // Instantiate a service factory for other objects to use.
+            IServiceFactory serviceFactory = new RaylibServiceFactory();
 
-            Cast cast = new Cast();
-            Script script = new Script();
-            //add the shapes to the cast
+            // Instantiate the actors that are used in this example.
+            Label label = new Label();
+            label.Display("Simon Says");
+            label.MoveTo(25, 25);
+            
+            Actor square1 = new Actor();
+            square1.SizeTo(100, 100);
+            square1.MoveTo(200, 100);
+            square1.Tint(Color.Blue());
 
-            // start the game
+            Actor square2 = new Actor();
+            square2.SizeTo(100, 100);
+            square2.MoveTo(340, 100);
+            square2.Tint(Color.Red());
+
+            Actor square3 = new Actor();
+            square3.SizeTo(100, 100);
+            square3.MoveTo(200, 220);
+            square3.Tint(Color.Yellow());
+
+            Actor square4 = new Actor();
+            square4.SizeTo(100, 100);
+            square4.MoveTo(340, 220);
+            square4.Tint(Color.Green());
+
+            // Instantiate the actions that use the actors.
+            ScaleActorAction scaleActorAction = new ScaleActorAction(serviceFactory);
+            DrawActorAction drawActorAction = new DrawActorAction(serviceFactory);
+
+            // Instantiate a new scene, add the actors and actions.
+            Scene scene = new Scene();
+            scene.AddActor("actors", square1);
+            scene.AddActor("actors", square2);
+            scene.AddActor("actors", square3);
+            scene.AddActor("actors", square4);
+
+            scene.AddActor("labels", label);
+            scene.AddAction(Phase.Input, scaleActorAction);
+            scene.AddAction(Phase.Output, drawActorAction);
+
+            // Start the game.
             Director director = new Director(serviceFactory);
-            director.StartGame(cast, script);
+            director.Direct(scene);
         }
     }
 }
