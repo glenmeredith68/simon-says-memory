@@ -13,10 +13,10 @@ namespace simon_says_memory.Game.Services
         private Dictionary<MouseButton, Raylib_cs.MouseButton> _buttons
             = new Dictionary<MouseButton, Raylib_cs.MouseButton>() 
         {
-            { MouseButton.Left, Raylib_cs.MouseButton.MOUSE_BUTTON_LEFT },
-            { MouseButton.Middle, Raylib_cs.MouseButton.MOUSE_BUTTON_MIDDLE },
-            { MouseButton.Right, Raylib_cs.MouseButton.MOUSE_BUTTON_RIGHT },
-            { MouseButton.Side, Raylib_cs.MouseButton.MOUSE_BUTTON_SIDE }
+            { MouseButton.Left, Raylib_cs.MouseButton.MOUSE_LEFT_BUTTON},
+            { MouseButton.Middle, Raylib_cs.MouseButton.MOUSE_MIDDLE_BUTTON },
+            { MouseButton.Right, Raylib_cs.MouseButton.MOUSE_RIGHT_BUTTON }
+            // { MouseButton.Side, Raylib_cs.MouseButton.MOUSE_BUTTON_SIDE }
         };
 
         public RaylibMouseService()
